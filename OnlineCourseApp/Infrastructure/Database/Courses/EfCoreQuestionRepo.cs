@@ -1,32 +1,73 @@
-﻿using OnlineCourseApp.Domain.Courses;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCourseApp.Domain.Courses;
 
 namespace OnlineCourseApp.Infrastructure.Database.Courses
 {
     public class EfCoreQuestionRepo : IQuestionRepo
     {
-        private static int _nextId = 1;
-        private static List<Question> _questions = new List<Question>();
-        public static int Add(Question question)
+        private readonly CourseWebsiteDbContext _context;
+        public EfCoreQuestionRepo(CourseWebsiteDbContext context)
         {
-            question.Id = _nextId++;
-            _questions.Add(question);
-            return question.Id;
+            _context = context;
         }
-        public static void Delete(int id)
+
+        public async Task AddAsync(Question question)
         {
-            var question = _questions.FirstOrDefault(q => q.Id == id);
+            _context.Questions.Add(question);
+            _context.SaveChanges();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var question = await _context.Questions.FirstOrDefaultAsync(qu => qu.Id == id);
             if (question != null)
             {
-                _questions.Remove(question);
+                _context.Questions.Remove(question);
+                _context.SaveChanges();
             }
         }
-        public static List<Question> GetAllQuestions()
+
+        public async Task UpdateAsync(Question UpdatedQuestion)
         {
-            return _questions;
+            {
+                var question = await _context.Questions.FirstOrDefaultAsync(ch => ch.Id == UpdatedQuestion.Id);
+                if (question != null)
+                {
+                    question.Text = UpdatedQuestion.Text;
+                    question.Choices = UpdatedQuestion.Choices;
+                    _context.SaveChanges();
+
+                }
+                _context.SaveChanges();
+
+            }
+
         }
-        public static Question? GetById(int id)
+        public async Task<Question> GetByIdAsync(int id)
         {
-            return _questions.FirstOrDefault(q => q.Id == id);
+
+            var result = await _context.Questions.FirstOrDefaultAsync(qu => qu.Id == id);
+            if (result == null)
+            {
+                // Fix it leater 
+                throw new Exception($"no entity with Id {id}");
+            }
+            return result;
+        }
+        // Take the Quiz id and return all the Quistion of the Quiz
+        public async Task<List<Question>> GetAllAsync(int QId, int pageIndex, int pageSize)
+        {
+            var result = new List<Question>();
+            foreach (var qu in _context.Questions)
+            {
+                if (qu.QuizId == QId)
+                {
+                    result.Add(qu);
+                }
+
+            }
+            // Need to add exciption if the list is empty
+            return result;
+
         }
 
     }

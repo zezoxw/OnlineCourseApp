@@ -1,41 +1,76 @@
-﻿using OnlineCourseApp.Domain.Courses;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCourseApp.Domain.Courses;
+using OnlineCourseApp.Infrastructure.Database;
+using OnlineCourseApp.Infrastructure.Database.Courses;
 
 namespace OnlineCourseApp.Infrastructure.Database.Courses
 {
     public class EfCoreQuizRepo : IQuizRepo
     {
-        private static int _nextId = 1;
-        private static List<Quiz> _quizzes = new List<Quiz>();
-        public static int Add(Quiz quiz)
+
+
+        private readonly CourseWebsiteDbContext _context;
+        public EfCoreQuizRepo(CourseWebsiteDbContext context)
         {
-            quiz.Id = _nextId++;
-            _quizzes.Add(quiz);
-            return quiz.Id;
+            _context = context;
         }
-        public static void Delete(int id)
+
+        public async Task AddAsync(Quiz quiz)
         {
-            var quiz = _quizzes.FirstOrDefault(q => q.Id == id);
+            _context.Quizs.Add(quiz);
+            _context.SaveChanges();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var quiz = await _context.Quizs.FirstOrDefaultAsync(q => q.Id == id);
             if (quiz != null)
             {
-                _quizzes.Remove(quiz);
+                _context.Quizs.Remove(quiz);
+                _context.SaveChanges();
             }
         }
-        public static List<Quiz> GetAllQuizzes()
+
+        public async Task UpdateAsync(Quiz UpdatedQuiz)
         {
-            return _quizzes;
-        }
-        public static Quiz? GetQuizById(int id)
-        {
-            return _quizzes.FirstOrDefault(q => q.Id == id);
-        }
-        public static void Update(Quiz quiz)
-        {
-            var existingQuiz = _quizzes.FirstOrDefault(q => q.Id == quiz.Id);
-            if (existingQuiz != null)
             {
-                existingQuiz.Title = quiz.Title;
-                existingQuiz.Questions = quiz.Questions;
+                var quiz = await _context.Quizs.FirstOrDefaultAsync(q => q.Id == UpdatedQuiz.Id);
+                if (quiz != null)
+                {
+                    quiz.Title = UpdatedQuiz.Title;
+                  // Leater will add function to add the qusition
+
+                }
+                _context.SaveChanges();
+
             }
+
+        }
+        public async Task<Quiz> GetByIdAsync(int id)
+        {
+
+            var result = await _context.Quizs.FirstOrDefaultAsync(q => q.Id == id);
+            if (result == null)
+            {
+                // Fix it leater 
+                throw new Exception($"no entity with Id {id}");
+            }
+            return result;
+        }
+        // Take the Modul id and return all the Quizs
+        public async Task<List<Quiz>> GetAllAsync(int MId, int? pageIndex, int? pageSize)
+        {
+            var result = new List<Quiz>();
+            foreach (var q in _context.Quizs)
+            {
+                if (q.ModuleId == MId)
+                {
+                    result.Add(q);
+                }
+
+            }
+            // Need to add exciption if the list is empty or not?
+            return result;
+
         }
     }
-    }
+}

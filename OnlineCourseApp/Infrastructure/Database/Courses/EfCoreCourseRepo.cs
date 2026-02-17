@@ -1,40 +1,69 @@
-﻿using OnlineCourseApp.Domain.Courses;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCourseApp.Domain.Courses;
 
 namespace OnlineCourseApp.Infrastructure.Database.Courses
 {
     public class EfCoreCourseRepo : ICourseRepo
     {
-        private static int _nextId = 1;
-        private static List<Course> _courses = new List<Course>();
+        private readonly CourseWebsiteDbContext _context;
+        public EfCoreCourseRepo(CourseWebsiteDbContext context)
+        {
+            _context = context;
+        }
 
-        public static int Add(Course course)
+        public async Task AddAsync(Course course)
         {
-            course.Id = _nextId++;
-            _courses.Add(course);
-            return course.Id;
+            _context.Courses.Add(course);
+            _context.SaveChanges();
         }
-        public static void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var course = _courses.FirstOrDefault(c => c.Id == id);
+            var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
             if (course != null)
             {
-                _courses.Remove(course);
+                _context.Courses.Remove(course);
+                _context.SaveChanges();
             }
         }
-        public static List<Course> GetAllCourses()
+
+        public async Task UpdateAsync(Course UpdatedCourse)
         {
-            return _courses;
-        }
-        public static void Update(Course updatedCourse)
-        {
-            var course = _courses.FirstOrDefault(c => c.Id == updatedCourse.Id);
-            if (course != null)
             {
-                course.Title = updatedCourse.Title;
-                course.Description = updatedCourse.Description;
-                course.instructor = updatedCourse.instructor;
-                // later we will add the update of modules and price
+                var course = await _context.Courses.FirstOrDefaultAsync(ch => ch.Id == UpdatedCourse.Id);
+                if (course != null)
+                {
+                    course.Title = UpdatedCourse.Title;
+                    course.Description = UpdatedCourse.Description;
+                    course.Price = UpdatedCourse.Price;
+                    // Leater enable updateing instructor and Module
+
+                }
+                _context.SaveChanges();
+
             }
+
         }
+        public async Task<Course> GetByIdAsync(int id)
+        {
+
+            var result = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+            if (result == null)
+            {
+                // Fix it leater 
+                throw new Exception($"no entity with Id {id}");
+            }
+            return result;
+        }
+        // Take the Qusiton id and return all the Quistion choices
+        public async Task<List<Course>> GetAllAsync(int QId, int pageIndex, int pageSize)
+        {
+            var result = new List<Course>();
+            result = _context.Courses.ToList();
+           
+            // Need to add exciption if the list is empty or a massge
+            return result;
+
+        }
+
     }
 }

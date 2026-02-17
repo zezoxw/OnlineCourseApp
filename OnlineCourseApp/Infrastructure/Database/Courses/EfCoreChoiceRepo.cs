@@ -1,41 +1,74 @@
-﻿using OnlineCourseApp.Domain.Courses;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCourseApp.Domain.Courses;
+using OnlineCourseApp.Infrastructure.Database;
 
 namespace OnlineCourseApp.Infrastructure.Database.Courses
 {
     public class EfCoreChoiceRepo : IChoiceRepo
     {
-        private static int _nextId = 1;
-        private static List<Choice> _choices = new List<Choice>();
-
-        public static int Add(Choice choice)
+        private readonly CourseWebsiteDbContext _context;
+        public EfCoreChoiceRepo(CourseWebsiteDbContext context)
         {
-            choice.Id = _nextId++;
-            _choices.Add(choice);
-            return choice.Id;
-        }
-        public static void Delete(int id)
-        {
-            var choice = _choices.FirstOrDefault(c => c.Id == id);
-            if (choice != null)
-            {
-                _choices.Remove(choice);
-            }
-        }
-        public static global::System.Collections.Generic.List<Choice> GetAllChoices()
-        {
-            return _choices;
-        }
-        public static void Update(Choice updatedChoice)
-        {
-            var choice = _choices.FirstOrDefault(c => c.Id == updatedChoice.Id);
-            if (choice != null)
-            {
-                choice.Text = updatedChoice.Text;
-                choice.IsCorrect = updatedChoice.IsCorrect;
-                choice.QuestionId = updatedChoice.QuestionId;
-            }
+            _context = context;
         }
 
+        public async Task AddAsync(Choice choice)
+        {
+             _context.Choices.Add(choice);
+             _context.SaveChanges();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var choice = await _context.Choices.FirstOrDefaultAsync(ch => ch.Id == id);
+            if (choice != null)
+            {
+                _context.Choices.Remove(choice);
+                _context.SaveChanges();
+            }
+        }
+        
+        public async Task UpdateAsync(Choice updatedChoice)
+        {
+            {
+                var choice = await _context.Choices.FirstOrDefaultAsync(ch => ch.Id == updatedChoice.Id);
+                if (choice != null)
+                {
+                    choice.Text = updatedChoice.Text;
+                    choice.IsCorrect = updatedChoice.IsCorrect;
+
+                }
+                _context.SaveChanges();
+
+            }
+
+        }
+        public async Task<Choice> GetByIdAsync(int id)
+        {
+
+            var result = await _context.Choices.FirstOrDefaultAsync(ch => ch.Id == id);
+            if (result == null)
+            {
+                // Fix it leater 
+                throw new Exception($"no entity with Id {id}");
+            }
+            return result;
+        }
+        // Take the Qusiton id and return all the Quistion choices
+        public async Task<List<Choice>> GetAllAsync(int QId, int pageIndex, int pageSize)
+        {
+            var result  = new List<Choice>();
+            foreach (var ch in _context.Choices)
+            {
+                if (ch.QuestionId == QId)
+                {
+                    result.Add(ch);
+                }
+
+            }
+            // Need to add exciption if the list is empty
+            return result;
+           
+        }
 
     }
 }
