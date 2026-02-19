@@ -54,7 +54,7 @@ namespace OnlineCourseApp.Infrastructure.Database
                       .WithOne(m => m.Course)
                       .HasForeignKey(m => m.CourseId)
                       .OnDelete(DeleteBehavior.Cascade);
-                /*
+                
                 // many-to-many with Student using explicit join table
                 entity.HasMany(c => c.students)
                       .WithMany(s => s.courses)
@@ -66,7 +66,7 @@ namespace OnlineCourseApp.Infrastructure.Database
                           {
                               j.HasKey("CourseId", "StudentId");
                               j.ToTable("CourseStudent");
-                          });*/
+                          });
 
             });
            
@@ -85,17 +85,7 @@ namespace OnlineCourseApp.Infrastructure.Database
 
             });
             // Quiz
-            modelBuilder.Entity<Quiz>(entity =>
-            {
-                // Set the id as primary key
-                entity.HasKey(q => q.Id);
-                entity.Property(q => q.Title).IsRequired();
-                entity.Property(q => q.ModuleId).IsRequired();
-                entity.HasMany(q => q.Questions)
-                      .WithOne(qu => qu.Quiz)
-                      .HasForeignKey(qu => qu.QuizId)
-                      .OnDelete(DeleteBehavior.Cascade);
-            });
+           
 
             // Question 
             modelBuilder.Entity<Question>(entity =>

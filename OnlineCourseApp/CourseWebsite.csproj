@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <Folder Include="Application\" />
+    <Folder Include="Models\Authentication\" />
+    <Folder Include="Models\Courses\" />
+    <Folder Include="Models\Home\" />
     <Folder Include="wwwroot\media\" />
   </ItemGroup>
 
