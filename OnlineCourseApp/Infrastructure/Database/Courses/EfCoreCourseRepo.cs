@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineCourseApp.Domain.Courses;
+using System.Security.Cryptography;
 
 namespace OnlineCourseApp.Infrastructure.Database.Courses
 {
@@ -54,16 +55,21 @@ namespace OnlineCourseApp.Infrastructure.Database.Courses
             }
             return result;
         }
-        // Take the Qusiton id and return all the Quistion choices
-        public async Task<List<Course>> GetAllAsync(int QId, int pageIndex, int pageSize)
+     
+        // Not finished yet
+        public async Task<List<Course>> GetAllAsync(int IId, int? pageIndex, int? pageSize)
         {
             var result = new List<Course>();
-            result = _context.Courses.ToList();
-           
+            foreach (var c in _context.Courses)
+            {
+                if (c.InstructorId == IId)
+                {
+                    result.Add(c);
+                }
+
+            }
             // Need to add exciption if the list is empty or a massge
             return result;
-
         }
-
     }
 }

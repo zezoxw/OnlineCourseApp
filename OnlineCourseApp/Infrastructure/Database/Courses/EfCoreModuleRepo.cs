@@ -53,12 +53,12 @@ namespace OnlineCourseApp.Infrastructure.Database.Courses
             return result;
         }
         // Take the Course id and return all the Module of the Course
-        public async Task<List<Module>> GetAllAsync(int CId, int pageIndex, int pageSize)
+        public async Task<List<Module>> GetAllAsync(int Id, int? pageIndex, int? pageSize)
         {
             var result = new List<Module>();
             foreach (var m in _context.Modules)
             {
-                if (m.CourseId == CId)
+                if (m.CourseId == Id)
                 {
                     result.Add(m);
                 }

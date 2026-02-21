@@ -15,4 +15,4 @@ namespace OnlineCourseApp.Domain.Students
         // inverse navigation for enrollments
         public List<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
-}
+} 

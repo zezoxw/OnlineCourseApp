@@ -54,7 +54,7 @@ namespace OnlineCourseApp.Infrastructure.Database.Courses
             return result;
         }
         // Take the Qusiton id and return all the Quistion choices
-        public async Task<List<Choice>> GetAllAsync(int QId, int pageIndex, int pageSize)
+        public async Task<List<Choice>> GetAllAsync(int QId, int? pageIndex, int? pageSize)
         {
             var result  = new List<Choice>();
             foreach (var ch in _context.Choices)

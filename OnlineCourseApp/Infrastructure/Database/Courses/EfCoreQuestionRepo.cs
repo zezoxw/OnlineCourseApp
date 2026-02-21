@@ -54,12 +54,12 @@ namespace OnlineCourseApp.Infrastructure.Database.Courses
             return result;
         }
         // Take the Quiz id and return all the Quistion of the Quiz
-        public async Task<List<Question>> GetAllAsync(int QId, int pageIndex, int pageSize)
+        public async Task<List<Question>> GetAllAsync(int Id, int? pageIndex, int? pageSize)
         {
             var result = new List<Question>();
             foreach (var qu in _context.Questions)
             {
-                if (qu.QuizId == QId)
+                if (qu.QuizId == Id)
                 {
                     result.Add(qu);
                 }
