@@ -34,7 +34,7 @@ namespace CourseWebsite.Services
                     Email = model.Email
                 };
 
-                
+                _studentRepo.AddAsync(student);
             }
             else
             {
@@ -45,16 +45,18 @@ namespace CourseWebsite.Services
                     Email = model.Email
                 };
 
-                _context.Instructors.Add(instructor);
+                _instructorRepo.AddAsync(instructor);
             }
 
-            _context.SaveChanges();
+           
         }
 
         public bool SignIn(SignInModel model)
         {
-            return _context.Students.Any(s => s.Email == model.Email)
-                || _context.Instructors.Any(i => i.Email == model.Email);
+            return true;
+            // Need to fix it 
+                //_studentRepo.GetByIdAsync()
+                //|| Instructors.Any(i => i.Email == model.Email);
         }
 
         public void ChangePassword(int userId, NewPasswordModel model)
@@ -70,7 +72,7 @@ namespace CourseWebsite.Services
             if (model.NewPassword != model.ConfirmPassword)
                 throw new Exception("Passwords do not match");
 
-            // token validation later
+            // validation later
         }
     }
 }

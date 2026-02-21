@@ -1,5 +1,6 @@
 ﻿using CourseWebsite.Models.Account;
 using OnlineCourseApp.Domain.Enrollments;
+using OnlineCourseApp.Domain.Students;
 using OnlineCourseApp.Infrastructure.Database;
 using System;
 
@@ -8,11 +9,13 @@ namespace CourseWebsite.Services
     public class StudentService : IStudentService
     {
 
-        private readonly CourseWebsiteDbContext _context;
+        private IStudentRepo _StudentRepo;
+        private IEnrollmentRepo _EnrollmentRepo;
 
-        public StudentService(CourseWebsiteDbContext context)
+        public StudentService(IStudentRepo studentRepo, IEnrollmentRepo enrollmentRepo)
         {
-            _context = context;
+            _StudentRepo = studentRepo;
+            _EnrollmentRepo = enrollmentRepo;
         }
 
         public void EnrollInCourse(int studentId, int courseId)
@@ -25,8 +28,8 @@ namespace CourseWebsite.Services
                 Status = "Active"
             };
 
-            _context.Enrollments.Add(enrollment);
-            _context.SaveChanges();
+            _EnrollmentRepo.AddAsync(enrollment);
+           
         }
 
         public MyCoursesModel GetMyCourses(int studentId)
@@ -46,14 +49,17 @@ namespace CourseWebsite.Services
 
         public void UnEnrollFromCourse(int studentId, int courseId)
         {
-            var enrollment = _context.Enrollments
-                .FirstOrDefault(e => e.StudentId == studentId && e.CourseId == courseId);
+            // Make this logic using repo not context
 
-            if (enrollment != null)
-            {
-                _context.Enrollments.Remove(enrollment);
-                _context.SaveChanges();
-            }
+
+            //var enrollment = _context.Enrollments
+            //    .FirstOrDefault(e => e.StudentId == studentId && e.CourseId == courseId);
+
+            //if (enrollment != null)
+            //{
+            //    _context.Enrollments.Remove(enrollment);
+            //    _context.SaveChanges();
+            //}
         }
 
         public void UpdateSettings(int studentId, StudentSettingModel model)
