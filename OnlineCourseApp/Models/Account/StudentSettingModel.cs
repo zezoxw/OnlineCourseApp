@@ -1,25 +1,25 @@
-﻿namespace CourseWebsite.Models.Account
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CourseWebsite.Models.Account
 {
     public class StudentSettingModel
     {
-        public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+        [Required]
         public bool EmailNotifications { get; set; }
 
-
-        //not what the model should have later after creating the view, change them to what needed.
-       
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
-        public string ConfirmPassword { get; set; }
     }
 }
 /*
   userInterface =>
-  * trycont
-  * loekoutTime
+  * trycount
+  * lockoutTime
   * 
   userManager =>
     * changePassword
     * ....ets
-  the manager is using the repository to update the database and the user you cant use the repo directly in the controller
+  the manager is using the repository to update the database and
+  the user you cant use the repo directly in the controller.
   */
